@@ -128,35 +128,30 @@ void taskSerial() {
       }
     case SerialStates::WAITING_REQUESTS: {
 
+
         // OUTPUT DEL ARDUINO
-        if (Serial.available() > 0) {
-          if (evButtons == true) {
-            evButtons = false;
-            Serial.print(digitalRead(LEFT_BTN));
-            Serial.print(',');
-            Serial.print(digitalRead(RIGHT_BTN));
-            Serial.print('\n');
-            if (evButtonsData == LEFT_BTN) {
-              Serial.println("Se incrementa el tamaño del cubo A");
-            }
-            else if (evButtonsData == RIGHT_BTN) {
-              Serial.println("Se cambia el Color del cubo A");
-            }
+        if(evButtons == true){
+          evButtons = false;
+          
+          if (evButtonsData == LEFT_BTN) {
+            Serial.println("Se incrementa el tamaño del cubo A");//FAlta añadir en unity el cambio
           }
-
-          // INPUT DEL UNITY
-          switch (Serial.read())
-          {
-            case 'A':
-              Serial.println("Led se prende"); // falta activar los leds y entrar los botones
-              digitalWrite(LED1, HIGH);
-              break;
-            case 'Z':
-              Serial.println("Led se apaga");
-              digitalWrite(LED1, LOW);
-              break;
+          else if (evButtonsData == RIGHT_BTN) {
+            Serial.println("Se cambia el Color del cubo A");
           }
+        }
 
+        // INPUT DEL UNITY
+        switch (Serial.read())
+        {
+          case 'A':
+            Serial.println("Led 2 se prende");
+            digitalWrite(LED2, HIGH);
+            break;
+          case 'Z':
+            Serial.println("Led 2 se apaga");
+            digitalWrite(LED2, LOW);
+            break;
         }
         break;
       }
@@ -164,6 +159,7 @@ void taskSerial() {
       break;
   }
 }
+
 void taskBeat() {
   enum class BeatStates {INIT, BEATING};
   static BeatStates beatlState =  BeatStates::INIT;
