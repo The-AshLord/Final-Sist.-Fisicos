@@ -34,20 +34,22 @@ unsigned long last_time = 0;
 
 void taskButtons();
 void taskSerial();
+void taskBeat();
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   taskButtons();
   taskSerial();
+  taskBeat();
 
 }
 
 void loop()
 {
   taskButtons();
-  taskSeial();
-  // Print a heartbeat
+  taskSerial();
+  taskBeat();
 }
 
 void taskButtons() {
@@ -89,7 +91,6 @@ void taskButtons() {
         }
         break;
       }
-
     case ButtonsStates::WAITING_STABLE: {
         if (digitalRead(lastButton) == HIGH) {
           buttonsState = ButtonsStates::WAITING_PRESS;
@@ -99,13 +100,11 @@ void taskButtons() {
         }
         break;
       }
-
     case ButtonsStates::WAITING_RELEASE: {
         if (digitalRead(lastButton) == HIGH) {
           buttonsState = ButtonsStates::WAITING_PRESS;
           evButtons = true;
           evButtonsData = lastButton;
-          LOG(String( String(buttonGetName(lastButton)) ));
         }
 
         break;
@@ -122,15 +121,12 @@ void taskSerial() {
 
   switch (serialState) {
     case SerialStates::INIT: {
-        Serial.begin(115200)
-        SerialStates = SerialStates::WAITING_REQUESTS;
+        Serial.begin(9600);
+        pinMode(LED2, OUTPUT);
+        serialState = SerialStates::WAITING_REQUESTS;
         break;
       }
     case SerialStates::WAITING_REQUESTS: {
-        // La respuesta se debe enviar siguiendo este protocolo:
-        // Enviar la cadena
-        // estado_UP,estado_DOWN,estado_LEFT,estado_RIGHT
-        // No olvidar enviar el ENTER: \n
 
         // OUTPUT DEL ARDUINO
         if (Serial.available() > 0) {
@@ -140,10 +136,10 @@ void taskSerial() {
             Serial.print(',');
             Serial.print(digitalRead(RIGHT_BTN));
             Serial.print('\n');
-            if (lastButton == LEFT_BTN) {
+            if (evButtonsData == LEFT_BTN) {
               Serial.println("Se incrementa el tamaño del cubo A");
             }
-            else if (lastButton == RIGHT_BTN) {
+            else if (evButtonsData == RIGHT_BTN) {
               Serial.println("Se cambia el Color del cubo A");
             }
           }
@@ -152,18 +148,51 @@ void taskSerial() {
           switch (Serial.read())
           {
             case 'A':
-              Serial.println("Led se prende"); // falta activar los leds y entrar los botones 
+              Serial.println("Led se prende"); // falta activar los leds y entrar los botones
+              digitalWrite(LED1, HIGH);
               break;
             case 'Z':
               Serial.println("Led se apaga");
+              digitalWrite(LED1, LOW);
               break;
           }
 
         }
+        break;
       }
+    default:
       break;
   }
-default:
-  break;
 }
+void taskBeat() {
+  enum class BeatStates {INIT, BEATING};
+  static BeatStates beatlState =  BeatStates::INIT;
+  static uint32_t previousMillis = 0;
+  const uint32_t interval = 500;
+  static bool ledState = false;
+
+  switch (beatlState) {
+    case BeatStates::INIT: {
+        digitalWrite(LED1, ledState);
+        pinMode(LED1, OUTPUT);
+        beatlState = BeatStates::BEATING;
+        break;
+      }
+    case BeatStates::BEATING: {
+        if ( (millis() - previousMillis) >= interval) {
+          previousMillis = millis();
+
+          if (ledState == false) {
+            ledState = true;
+          } else {
+            ledState = false;
+          }
+          digitalWrite(LED1, ledState);
+        }
+
+        break;
+      }
+    default:
+      break;
+  }
 }
