@@ -14,23 +14,6 @@ public class AsciiLedController : MonoBehaviour
         Debug.Log("Press BottonA to execute some actions");
     }
 
-    // Executed each frame
-    void Update()
-    {
-        //---------------------------------------------------------------------
-        // Send data
-        //---------------------------------------------------------------------
-
-        // If you press one of these keys send it to the serial device. A
-        // sample serial device that accepts this input is given in the README.
-  
-
-
-        //---------------------------------------------------------------------
-        // Receive data
-        //---------------------------------------------------------------------
-
-    }
 
     public void AsciiLedSwitch()
     {   

@@ -19,7 +19,7 @@ using System.IO.Ports;
  * 
  * For method comments, refer to the base class.
  */
-public class SerialThreadBinaryDelimited : AbstractSerialThread
+public class SerialThreadOurBinaryDelimited : AbstractSerialThread
 {
     // Messages to/from the serial port should be delimited using this separator.
     private byte separator;
@@ -27,7 +27,7 @@ public class SerialThreadBinaryDelimited : AbstractSerialThread
     private byte[] buffer = new byte[1024];
     private int bufferUsed = 0;
     
-    public SerialThreadBinaryDelimited(string portName,
+    public SerialThreadOurBinaryDelimited(string portName,
                                        int baudRate,
                                        int delayBeforeReconnecting,
                                        int maxUnreadMessages,
@@ -54,18 +54,21 @@ public class SerialThreadBinaryDelimited : AbstractSerialThread
 
         // Search for the separator in the buffer
         int index = System.Array.FindIndex<byte>(buffer, 0, bufferUsed, IsSeparator);
-        if (index == -1)
+        if (index == 0)
             return null;
-
-        byte[] returnBuffer = new byte[index];
-        System.Array.Copy(buffer, returnBuffer, index);
+        if (index == bufferUsed)
+        {
+            byte[] returnBuffer = new byte[1];
+            System.Array.Copy(buffer, returnBuffer, 1);
+        }
+        
 
         // Shift the buffer so next time the unused bytes start at 0 (safe even
         // if there is overlap)
         System.Array.Copy(buffer, index + 1, buffer, 0, bufferUsed - index);
         bufferUsed -= index + 1;
 
-        return returnBuffer;
+        return bufferUsed;
     }
 
     private bool IsSeparator(byte aByte)

@@ -41,7 +41,7 @@ public class SerialControllerCustomDelimiter : MonoBehaviour
 
     // Internal reference to the Thread and the object that runs in it.
     protected Thread thread;
-    protected SerialThreadBinaryDelimited serialThread;
+    protected SerialThreadOurBinaryDelimited serialThread;
 
 
     // ------------------------------------------------------------------------
@@ -51,7 +51,7 @@ public class SerialControllerCustomDelimiter : MonoBehaviour
     // ------------------------------------------------------------------------
     void OnEnable()
     {
-        serialThread = new SerialThreadBinaryDelimited(portName,
+        serialThread = new SerialThreadOurBinaryDelimited(portName,
                                                        baudRate,
                                                        reconnectionDelay,
                                                        maxUnreadMessages,

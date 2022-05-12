@@ -134,10 +134,10 @@ void taskSerial() {
           evButtons = false;
           
           if (evButtonsData == LEFT_BTN) {
-            Serial.println("Se incrementa el tamaño del cubo A");//FAlta añadir en unity el cambio
+            Serial.println("Size");
           }
           else if (evButtonsData == RIGHT_BTN) {
-            Serial.println("Se cambia el Color del cubo A");
+            Serial.println("Color");
           }
         }
 
