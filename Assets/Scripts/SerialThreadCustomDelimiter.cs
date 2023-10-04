@@ -56,19 +56,16 @@ public class SerialThreadOurBinaryDelimited : AbstractSerialThread
         int index = System.Array.FindIndex<byte>(buffer, 0, bufferUsed, IsSeparator);
         if (index == 0)
             return null;
-        if (index == bufferUsed)
-        {
-            byte[] returnBuffer = new byte[1];
-            System.Array.Copy(buffer, returnBuffer, 1);
-        }
-        
+
+        byte[] returnBuffer = new byte[1];
+        System.Array.Copy(buffer, returnBuffer, 1);
 
         // Shift the buffer so next time the unused bytes start at 0 (safe even
         // if there is overlap)
         System.Array.Copy(buffer, index + 1, buffer, 0, bufferUsed - index);
         bufferUsed -= index + 1;
 
-        return bufferUsed;
+        return returnBuffer;
     }
 
     private bool IsSeparator(byte aByte)
